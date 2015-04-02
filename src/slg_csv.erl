@@ -1,5 +1,5 @@
 -module(slg_csv).
--export([start/0, add/3, test/0, load/0, root/1, stop/0]).
+-export([start/0, add/3, test/0, load/0, root/1, stop/0, load/1]).
 
 -define(csv_record(Name), {Name, record_info(fields, Name)}).
 
@@ -27,6 +27,9 @@ root(Path) ->
 %% 加载配置
 load() ->
   csv_proxy:reload().
+
+load(Tags) ->
+  csv_proxy:reload(Tags).
 
 test() ->
   start(),

@@ -8,6 +8,8 @@
 
 -export([start/0,     %% 启动整个csv_config模块
          load/0,      %% 加载配置到内存.
+         load/1,      %% 加载特定的配置到内存.
+         maps_table/1,
          attr_idx/2   %% 根据TableName + AttrList查找其下标.
         ]).
 
@@ -49,6 +51,11 @@ maps_table() ->
   O1 = [ {T, R, L} || [T, R, L] <- O ],
   O1.
 
+maps_table(Tags) ->
+  O = ets:match(csv_map_table, {'$1','$2','$3'}),
+  O1 = [ {T, R, L} || [T, R, L] <- O, lists:member(erlang:element(1, T), Tags) ],
+  O1.
+
 %% 启动整个csv_config配置
 start() ->
   safe_ets_create(csv_map_table, [named_table, public]),  %% 用于记录用户配置
@@ -60,6 +67,9 @@ start() ->
 %% 进行加载处理
 load() ->
   lists:foreach(fun gen_ets_table/1, maps_table()).
+
+load(Tags) ->
+  lists:foreach(fun gen_ets_table/1, maps_table(Tags)).
 
 -define(csv_attr_key(TableName, AttrName), {TableName, AttrName}).
 
